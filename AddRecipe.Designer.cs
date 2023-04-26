@@ -34,8 +34,6 @@
             mBtn_AppendIngrediant = new Button();
             mBtnAddIngrediants = new Button();
             label1 = new Label();
-            mRecipe_ListBox = new ListBox();
-            mBtnSwapUp = new Button();
             mBtnSubmitRecipe = new Button();
             mBtnConfirmEdit = new Button();
             label3 = new Label();
@@ -158,30 +156,6 @@
             label1.TabIndex = 3;
             label1.Text = "Search";
             // 
-            // mRecipe_ListBox
-            // 
-            mRecipe_ListBox.DrawMode = DrawMode.OwnerDrawFixed;
-            mRecipe_ListBox.FormattingEnabled = true;
-            mRecipe_ListBox.ItemHeight = 15;
-            mRecipe_ListBox.Location = new Point(292, 507);
-            mRecipe_ListBox.Name = "mRecipe_ListBox";
-            mRecipe_ListBox.Size = new Size(32, 34);
-            mRecipe_ListBox.TabIndex = 6;
-            mRecipe_ListBox.MouseClick += mRecipe_ListBox_MouseClick;
-            mRecipe_ListBox.DrawItem += mRecipe_ListBox_DrawItem;
-            mRecipe_ListBox.SelectedIndexChanged += mRecipe_ListBox_SelectedIndexChanged;
-            mRecipe_ListBox.KeyDown += mRecipe_ListBox_KeyDown;
-            // 
-            // mBtnSwapUp
-            // 
-            mBtnSwapUp.Location = new Point(6, 538);
-            mBtnSwapUp.Name = "mBtnSwapUp";
-            mBtnSwapUp.Size = new Size(75, 23);
-            mBtnSwapUp.TabIndex = 7;
-            mBtnSwapUp.Text = "Swap Up";
-            mBtnSwapUp.UseVisualStyleBackColor = true;
-            mBtnSwapUp.Click += mBtnSwapUp_Click;
-            // 
             // mBtnSubmitRecipe
             // 
             mBtnSubmitRecipe.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
@@ -231,9 +205,7 @@
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(mRecipe_ListBox);
             groupBox2.Controls.Add(mGridView_SelecttedIngrediants);
-            groupBox2.Controls.Add(mBtnSwapUp);
             groupBox2.Controls.Add(label4);
             groupBox2.Controls.Add(mBtnSubmitRecipe);
             groupBox2.Controls.Add(label3);
@@ -251,6 +223,7 @@
             mGridView_SelecttedIngrediants.AllowUserToAddRows = false;
             mGridView_SelecttedIngrediants.AllowUserToDeleteRows = false;
             mGridView_SelecttedIngrediants.AllowUserToResizeRows = false;
+            mGridView_SelecttedIngrediants.BackgroundColor = SystemColors.Control;
             mGridView_SelecttedIngrediants.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             mGridView_SelecttedIngrediants.Location = new Point(9, 91);
             mGridView_SelecttedIngrediants.MultiSelect = false;
@@ -261,6 +234,8 @@
             mGridView_SelecttedIngrediants.Size = new Size(315, 440);
             mGridView_SelecttedIngrediants.TabIndex = 11;
             mGridView_SelecttedIngrediants.SelectionChanged += mGridView_SelecttedIngrediants_SelectionChanged;
+            mGridView_SelecttedIngrediants.KeyDown += AddRecipe_KeyDown;
+            mGridView_SelecttedIngrediants.MouseClick += mRecipe_ListBox_MouseClick;
             // 
             // groupBox3
             // 
@@ -349,9 +324,7 @@
         private Label label1;
         private TextBox mTxtBx_IngrediantUnits;
         private Button mBtnAddIngrediants;
-        private ListBox mRecipe_ListBox;
         private Label label2;
-        private Button mBtnSwapUp;
         private Button mBtnSubmitRecipe;
         private Button mBtnConfirmEdit;
         private Label label3;

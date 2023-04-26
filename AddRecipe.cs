@@ -11,28 +11,25 @@ using System.Xml.Schema;
 
 namespace FoodPlanInator {
     public partial class AddRecipe : Form {
-        DataTable SelecttedIngrediants_View;
         public AddRecipe() {
             InitializeComponent();
             reload_ingrediants_list();
             reload_all_recipes_list();
 
             SelecttedIngrediants_View = new DataTable();
+            SelecttedIngrediants_View.Columns.Add("ingrediant_id");
+            SelecttedIngrediants_View.Columns[0].DefaultValue = 0;
             SelecttedIngrediants_View.Columns.Add("name");
             SelecttedIngrediants_View.Columns.Add("units");
             SelecttedIngrediants_View.Columns.Add("amount");
 
+
             mGridView_SelecttedIngrediants.DataSource = SelecttedIngrediants_View;
+            mGridView_SelecttedIngrediants.Columns[0].Visible = false;
 
-            for (int i = 0; i < 5; i++) {
-                DataRow row = SelecttedIngrediants_View.NewRow();
-                row[0] = "lior" + (5 - i).ToString();
-                row[1] = "kg";
-                row[2] = i.ToString();
-                SelecttedIngrediants_View.Rows.Add(row);
+            foreach (DataGridViewColumn col in mGridView_SelecttedIngrediants.Columns) {
+                col.SortMode = DataGridViewColumnSortMode.NotSortable;
             }
-
-            //SelecttedIngrediants_View.Columns.AddRange();
         }
 
         // Ingrediants Logic
@@ -115,18 +112,6 @@ namespace FoodPlanInator {
             ListBoxUtil.DrawListBoxItem(realSelecttedIngrediantIndex, sender, e);
         }
 
-        // Recipe Creator Logic
-
-        List<IngrediantAmmount> current_recipe_ingrediants_list = new List<IngrediantAmmount>();
-
-        private void reload_current_recipe_list() {
-            mRecipe_ListBox.Items.Clear();
-            foreach (var item in current_recipe_ingrediants_list) {
-                Ingrediant ingred = RecipiesArchiveIntf.get_Ingrediant(item.ingrediant_id);
-                mRecipe_ListBox.Items.Add(ingred.name + ", " + ingred.units + ", " + item.ammount.ToString());
-            }
-        }
-
         private IngrediantAmmount make_ingrediant_ammount() {
             if (get_selected_ingrediant_id() == 0) {
                 return null;
@@ -141,43 +126,89 @@ namespace FoodPlanInator {
             return new IngrediantAmmount(get_selected_ingrediant_id(), ammount);
         }
 
+        // Recipe Creator Logic
+        DataTable SelecttedIngrediants_View;
+
+        private bool ignore_selection_changed = false;
+        private void mGridView_SelecttedIngrediants_SelectionChanged(object sender, EventArgs e) {
+            if (this.ignore_selection_changed) { return; }
+
+            int selected_row_index = recipe_creator_get_selected_index();
+            if (selected_row_index == -1) { return; }
+
+            this.ignore_selection_changed = true;
+            mGridView_SelecttedIngrediants.Rows[selected_row_index].Selected = true;
+            this.ignore_selection_changed = false;
+        }
+
+        private int recipe_creator_get_selected_index() {
+            if (mGridView_SelecttedIngrediants.SelectedCells.Count == 0) { return -1; }
+            return mGridView_SelecttedIngrediants.SelectedCells[0].RowIndex;
+        }
+
+        private void fill_row(DataRow row, IngrediantAmmount new_ingrediant_ammount) {
+            Ingrediant cur_ingrediant = RecipiesArchiveIntf.get_Ingrediant(new_ingrediant_ammount.ingrediant_id);
+            row[0] = new_ingrediant_ammount.ingrediant_id;
+            row[1] = cur_ingrediant.name;
+            row[2] = cur_ingrediant.units;
+            row[3] = new_ingrediant_ammount.ammount;
+        }
+
+        private IngrediantAmmount row_index_to_ingrediant_ammount(int index) {
+            DataRow row = SelecttedIngrediants_View.Rows[index];
+            return new IngrediantAmmount(long.Parse((string)row[0]), float.Parse((string)row[3]));
+        }
+
+        private List<IngrediantAmmount> get_ingrediant_list() {
+            List<IngrediantAmmount> ret = new List<IngrediantAmmount>();
+            for (int i = 0; i < this.SelecttedIngrediants_View.Rows.Count; i++) {
+                ret.Add(row_index_to_ingrediant_ammount(i));
+            }
+            return ret;
+        }
+
+        private void set_ingrediant_list(List<IngrediantAmmount> list) {
+            foreach (IngrediantAmmount item in list) {
+                add_row_to_recipe_creator(item);
+            }
+        }
+
+        private void add_row_to_recipe_creator(IngrediantAmmount new_ingrediant_ammount) {
+
+            DataRow row = SelecttedIngrediants_View.NewRow();
+            fill_row(row, new_ingrediant_ammount);
+            SelecttedIngrediants_View.Rows.Add(row);
+        }
+
+        private void edit_row_of_recipe_creator(int edit_index, IngrediantAmmount new_ingrediant_ammount) {
+            DataRow row = SelecttedIngrediants_View.Rows[edit_index];
+            fill_row(row, new_ingrediant_ammount);
+        }
+
         private void mBtn_AppendIngrediant_Click(object sender, EventArgs e) {
             IngrediantAmmount new_ingrediant_ammount = make_ingrediant_ammount();
             if (new_ingrediant_ammount == null) {
                 return;
             }
-            current_recipe_ingrediants_list.Add(new_ingrediant_ammount);
-            reload_current_recipe_list();
-        }
-
-        private void mBtnSwapUp_Click(object sender, EventArgs e) {
-            int idx = mRecipe_ListBox.SelectedIndex;
-            dynamic temp = current_recipe_ingrediants_list[idx];
-            if (idx > 0) {
-                current_recipe_ingrediants_list[idx] = current_recipe_ingrediants_list[idx - 1];
-                current_recipe_ingrediants_list[idx - 1] = temp;
-                reload_current_recipe_list();
-                mRecipe_ListBox.SelectedIndex = idx - 1;
-            }
+            add_row_to_recipe_creator(new_ingrediant_ammount);
         }
 
         private void mBtnConfirmEdit_Click(object sender, EventArgs e) {
-            int index = mRecipe_ListBox.SelectedIndex;
+            int index = recipe_creator_get_selected_index();
             // update selected recipe-item to be pulled from ingrediantes view.
             IngrediantAmmount new_ingrediant_ammount = make_ingrediant_ammount();
             if (new_ingrediant_ammount == null || index == -1) {
                 return;
             }
-            current_recipe_ingrediants_list[index] = (new_ingrediant_ammount);
-            reload_current_recipe_list();
+            edit_row_of_recipe_creator(index, new_ingrediant_ammount);
         }
 
         private void mRecipe_ListBox_MouseClick(object sender, MouseEventArgs e) {
             // whenever a recipe-item is clicked, open it up in the ingrediants view.
-            if (mRecipe_ListBox.SelectedIndex == -1) {
+            if (recipe_creator_get_selected_index() == -1) {
                 return;
             }
-            IngrediantAmmount cur_ingred_amount = current_recipe_ingrediants_list[mRecipe_ListBox.SelectedIndex];
+            IngrediantAmmount cur_ingred_amount = row_index_to_ingrediant_ammount(recipe_creator_get_selected_index());
             m_TxtBoxIngrediantSearch.Text = cur_ingred_amount.get_ingrediant().name;
             mIngrediantListBox.SelectedIndex = 0;
             if ((string)mIngrediantListBox.Items[mIngrediantListBox.SelectedIndex] != cur_ingred_amount.get_ingrediant().name) {
@@ -192,7 +223,7 @@ namespace FoodPlanInator {
                 MessageBox.Show("enter new recipe name");
                 return null;
             }
-            if (current_recipe_ingrediants_list == null || current_recipe_ingrediants_list.Count == 0) {
+            if (SelecttedIngrediants_View.Rows.Count == 0) {
                 MessageBox.Show("recipe can't be empty");
                 return null;
             }
@@ -200,10 +231,9 @@ namespace FoodPlanInator {
             if (recipe_id_to_use == 0) {
                 recipe_id_to_use = RecipiesArchiveIntf.get_unused_id();
             }
-            Recipe new_recipe = new Recipe(recipe_id_to_use, mTxtBxNewRecipeName.Text, current_recipe_ingrediants_list);
-            current_recipe_ingrediants_list = new List<IngrediantAmmount>();
+            Recipe new_recipe = new Recipe(recipe_id_to_use, mTxtBxNewRecipeName.Text, get_ingrediant_list());
+            SelecttedIngrediants_View.Clear();
             mTxtBxNewRecipeName.Text = "";
-            reload_current_recipe_list();
             return new_recipe;
         }
 
@@ -218,10 +248,9 @@ namespace FoodPlanInator {
 
         private void mRecipe_ListBox_KeyDown(object sender, KeyEventArgs e) {
             if (e.KeyCode == Keys.Delete) {
-                if (mRecipe_ListBox.SelectedIndex != -1) {
-                    current_recipe_ingrediants_list.RemoveAt(mRecipe_ListBox.SelectedIndex);
+                if (recipe_creator_get_selected_index() != -1) {
+                    SelecttedIngrediants_View.Rows.RemoveAt(recipe_creator_get_selected_index());
                 }
-                reload_current_recipe_list();
             }
         }
 
@@ -234,18 +263,6 @@ namespace FoodPlanInator {
 
         private void mRecipe_ListBox_DrawItem(object sender, DrawItemEventArgs e) {
             ListBoxUtil.DrawListBoxItem(realSelecttedRecipeCreationIndex, sender, e);
-        }
-
-        private bool ignore_selection_changed = false;
-        private void mGridView_SelecttedIngrediants_SelectionChanged(object sender, EventArgs e) {
-            if (this.ignore_selection_changed) { return; }
-            if (mGridView_SelecttedIngrediants.SelectedCells.Count == 0) { return; }
-            this.ignore_selection_changed = true;
-
-            int selected_row_index = mGridView_SelecttedIngrediants.SelectedCells[0].RowIndex;
-            mGridView_SelecttedIngrediants.Rows[selected_row_index].Selected = true;
-
-            this.ignore_selection_changed = false;
         }
 
 
@@ -298,9 +315,8 @@ namespace FoodPlanInator {
         private void mListBx_Recipes_MouseDoubleClick(object sender, MouseEventArgs e) {
             Recipe selected_recipe = RecipiesArchiveIntf.get_recipe(get_selected_recipe_id());
             mTxtBxNewRecipeName.Text = selected_recipe.name;
-            current_recipe_ingrediants_list.Clear();
-            current_recipe_ingrediants_list = new List<IngrediantAmmount>(selected_recipe.ingrediants);
-            reload_current_recipe_list();
+            SelecttedIngrediants_View.Clear();
+            set_ingrediant_list(new List<IngrediantAmmount>(selected_recipe.ingrediants));
         }
 
         private void mBtn_SaveRecieEdits_Click(object sender, EventArgs e) {
