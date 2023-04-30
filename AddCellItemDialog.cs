@@ -11,13 +11,47 @@ using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace FoodPlanInator {
     public partial class AddCellItemDialog : Form {
+        // return vlaue of this form
         public long mSelected_recipe_id = 0;
+
+        // used for recipes gridview
+        DataTable SelecttedIngrediants_View;
 
         public AddCellItemDialog() {
             InitializeComponent();
-            reload_recipe_list();
-            this.mListBox.SelectedIndex = -1;
+
+            SelecttedIngrediants_View = new DataTable();
+            SelecttedIngrediants_View.Columns.Add("recipe_id");
+            SelecttedIngrediants_View.Columns[0].DefaultValue = 0;
+            SelecttedIngrediants_View.Columns.Add("search_match_score");
+            SelecttedIngrediants_View.Columns[1].DefaultValue = 0;
+            SelecttedIngrediants_View.Columns.Add("Name");
+            SelecttedIngrediants_View.Columns.Add("Servings");
+            SelecttedIngrediants_View.Columns.Add("Work Per Serving [sec]");
+            SelecttedIngrediants_View.Columns.Add("Price Per Serving");
+
+            fill_table();
+
             this.mTextBoxFilter.Focus();
+        }
+
+        void fill_table() {
+            SelecttedIngrediants_View.Clear();
+
+            foreach (Recipe recipe in RecipiesArchiveIntf.get_all_recipes()) {
+                DataRow row = SelecttedIngrediants_View.NewRow();
+                row[0] = recipe.id;
+                row[1] = calculate_recipe_match_score(recipe.name);
+                row[2] = recipe.name;
+                row[3] = "Not Avalible";
+                row[4] = "Not Avalible";
+                row[5] = "Not Avalible";
+                SelecttedIngrediants_View.Rows.Add(row);
+            }
+
+            dataGridView1.DataSource = SelecttedIngrediants_View;
+            dataGridView1.Columns[0].Visible = false;
+            dataGridView1.Columns[1].Visible = false;
         }
 
         float calculate_recipe_match_score(string recipe_name) {
@@ -25,41 +59,15 @@ namespace FoodPlanInator {
             return StringSimilarityMetric.Compute(recipe_name, mTextBoxFilter.Text);
         }
 
-        // in the n'th cell is the recipe-id of the n'th best match
-        long[] idx_to_id_map = null;
+        private int get_selected_index() {
+            if (dataGridView1.SelectedCells.Count == 0) { return -1; }
+            return dataGridView1.SelectedCells[0].RowIndex;
+        }
 
         long get_selected_recipe_id() {
-            if (mListBox.SelectedIndex == -1) {
-                return 0;
-            }
-            return idx_to_id_map[mListBox.SelectedIndex];
+            if (dataGridView1.SelectedCells.Count == 0) { return -1; }
+            return long.Parse((string)dataGridView1.SelectedCells[0].OwningRow.Cells[0].Value);
         }
-
-        void set_selected_recipe(long id) {
-            mListBox.SelectedIndex = Array.IndexOf(idx_to_id_map, id);
-        }
-
-        void reload_recipe_list() {
-            // load list of recipes
-            List<Recipe> recipes_list = RecipiesArchiveIntf.get_all_recipes();
-            float[] scores = new float[recipes_list.Count];
-            long[] idx_arr = new long[recipes_list.Count];
-
-            // sort recipes list by how closely they match filter.
-            for (int i = 0; i < scores.Length; i++) {
-                scores[i] = calculate_recipe_match_score(recipes_list[i].name);
-                idx_arr[i] = recipes_list[i].id;
-            }
-            Array.Sort(scores, idx_arr);
-            idx_to_id_map = idx_arr;
-
-            // populate mListBox
-            mListBox.Items.Clear();
-            for (int i = 0; i < idx_to_id_map.Length; i++) {
-                mListBox.Items.Add(RecipiesArchiveIntf.get_recipe(idx_to_id_map[i]).name);
-            }
-        }
-
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
             if (keyData == Keys.Down || keyData == Keys.Up || keyData == Keys.Enter) {
@@ -85,9 +93,10 @@ namespace FoodPlanInator {
         }
 
         public bool change_selection(int delta) {
-            int new_index = mListBox.SelectedIndex + delta;
-            if (new_index < mListBox.Items.Count && new_index >= 0) {
-                mListBox.SelectedIndex = new_index;
+            int new_index = get_selected_index() + delta;
+            if (new_index < dataGridView1.Rows.Count && new_index >= 0) {
+                dataGridView1.ClearSelection();
+                dataGridView1.Rows[new_index].Selected = true;
                 return true;
             }
             return false;
@@ -98,16 +107,16 @@ namespace FoodPlanInator {
             this.Close();
         }
 
+        private bool ignore_selection_changed = false;
+        private void mGridView_SelecttedIngrediants_SelectionChanged(object sender, EventArgs e) {
+            if (this.ignore_selection_changed) { return; }
 
-        int realSelecttedIndex = -1;
-        private void mListBox_SelectedIndexChanged(object sender, EventArgs e) {
-            ListBox listBoxSender = (ListBox)sender;
-            realSelecttedIndex = listBoxSender.SelectedIndex;
-            listBoxSender.Refresh();
-        }
+            int selected_row_index = get_selected_index();
+            if (selected_row_index == -1) { return; }
 
-        private void mListBox_DrawItem(object sender, DrawItemEventArgs e) {
-            ListBoxUtil.DrawListBoxItem(realSelecttedIndex, sender, e);
+            this.ignore_selection_changed = true;
+            dataGridView1.Rows[selected_row_index].Selected = true;
+            this.ignore_selection_changed = false;
         }
 
         private void mListBox_DoubleClick(object sender, EventArgs e) {
@@ -115,7 +124,16 @@ namespace FoodPlanInator {
         }
 
         private void mTextBoxFilter_TextChanged(object sender, EventArgs e) {
-            reload_recipe_list();
+            // clear sorting
+            foreach (DataGridViewColumn col in dataGridView1.Columns) {
+                col.SortMode = DataGridViewColumnSortMode.NotSortable;
+                col.SortMode = DataGridViewColumnSortMode.Automatic;
+            }
+
+            // order by search resutls
+            fill_table();
+
+            dataGridView1.Sort(dataGridView1.Columns[1], ListSortDirection.Ascending);
         }
     }
 }

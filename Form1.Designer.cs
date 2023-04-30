@@ -38,7 +38,7 @@
             // 
             mBtn_EditRecepies.Location = new Point(1284, 12);
             mBtn_EditRecepies.Name = "mBtn_EditRecepies";
-            mBtn_EditRecepies.Size = new Size(150, 36);
+            mBtn_EditRecepies.Size = new Size(150, 80);
             mBtn_EditRecepies.TabIndex = 1;
             mBtn_EditRecepies.Text = "Edit Recipies";
             mBtn_EditRecepies.UseVisualStyleBackColor = true;
@@ -46,13 +46,13 @@
             // 
             // mBtn_ExportToImage
             // 
-            mBtn_ExportToImage.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
+            mBtn_ExportToImage.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
             mBtn_ExportToImage.ForeColor = Color.DarkOliveGreen;
-            mBtn_ExportToImage.Location = new Point(480, 12);
+            mBtn_ExportToImage.Location = new Point(12, 54);
             mBtn_ExportToImage.Name = "mBtn_ExportToImage";
-            mBtn_ExportToImage.Size = new Size(178, 36);
+            mBtn_ExportToImage.Size = new Size(150, 38);
             mBtn_ExportToImage.TabIndex = 2;
-            mBtn_ExportToImage.Text = "Submit";
+            mBtn_ExportToImage.Text = "Submit Food Plan";
             mBtn_ExportToImage.UseVisualStyleBackColor = true;
             mBtn_ExportToImage.Click += mBtn_ExportToImage_Click;
             // 
@@ -69,9 +69,9 @@
             // 
             // mBtn_LoadJson
             // 
-            mBtn_LoadJson.Location = new Point(324, 12);
+            mBtn_LoadJson.Location = new Point(168, 55);
             mBtn_LoadJson.Name = "mBtn_LoadJson";
-            mBtn_LoadJson.Size = new Size(150, 36);
+            mBtn_LoadJson.Size = new Size(150, 38);
             mBtn_LoadJson.TabIndex = 4;
             mBtn_LoadJson.Text = "Load Plan From Json";
             mBtn_LoadJson.UseVisualStyleBackColor = true;
@@ -79,7 +79,7 @@
             // 
             // mBtn_SelectMonth
             // 
-            mBtn_SelectMonth.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            mBtn_SelectMonth.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point);
             mBtn_SelectMonth.ForeColor = Color.DarkGoldenrod;
             mBtn_SelectMonth.Location = new Point(12, 12);
             mBtn_SelectMonth.Name = "mBtn_SelectMonth";
@@ -94,9 +94,9 @@
             panel1.AutoScroll = true;
             panel1.BorderStyle = BorderStyle.FixedSingle;
             panel1.Controls.Add(MonthLabel);
-            panel1.Location = new Point(12, 54);
+            panel1.Location = new Point(12, 98);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1422, 702);
+            panel1.Size = new Size(1422, 658);
             panel1.TabIndex = 6;
             // 
             // MonthLabel

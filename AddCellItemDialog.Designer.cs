@@ -25,52 +25,58 @@
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddCellItemDialog));
             mTextBoxFilter = new TextBox();
-            mListBox = new ListBox();
             mBtnSubmit = new Button();
+            dataGridView1 = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // mTextBoxFilter
             // 
             mTextBoxFilter.Location = new Point(12, 15);
             mTextBoxFilter.Name = "mTextBoxFilter";
-            mTextBoxFilter.Size = new Size(258, 23);
+            mTextBoxFilter.Size = new Size(367, 23);
             mTextBoxFilter.TabIndex = 0;
             mTextBoxFilter.TextChanged += mTextBoxFilter_TextChanged;
             // 
-            // mListBox
-            // 
-            mListBox.DrawMode = DrawMode.OwnerDrawFixed;
-            mListBox.FormattingEnabled = true;
-            mListBox.ItemHeight = 15;
-            mListBox.Location = new Point(12, 44);
-            mListBox.Name = "mListBox";
-            mListBox.Size = new Size(258, 454);
-            mListBox.TabIndex = 1;
-            mListBox.DrawItem += mListBox_DrawItem;
-            mListBox.SelectedIndexChanged += mListBox_SelectedIndexChanged;
-            mListBox.DoubleClick += mListBox_DoubleClick;
-            // 
             // mBtnSubmit
             // 
-            mBtnSubmit.Location = new Point(12, 498);
+            mBtnSubmit.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
+            mBtnSubmit.Location = new Point(111, 489);
             mBtnSubmit.Name = "mBtnSubmit";
-            mBtnSubmit.Size = new Size(75, 23);
+            mBtnSubmit.Size = new Size(168, 32);
             mBtnSubmit.TabIndex = 2;
             mBtnSubmit.Text = "Submit";
             mBtnSubmit.UseVisualStyleBackColor = true;
             mBtnSubmit.Click += mBtnSubmit_Click;
             // 
+            // dataGridView1
+            // 
+            dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.AllowUserToDeleteRows = false;
+            dataGridView1.BackgroundColor = SystemColors.Control;
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(12, 44);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.ReadOnly = true;
+            dataGridView1.RowHeadersWidth = 4;
+            dataGridView1.RowTemplate.Height = 25;
+            dataGridView1.Size = new Size(367, 439);
+            dataGridView1.TabIndex = 3;
+            dataGridView1.SelectionChanged += mGridView_SelecttedIngrediants_SelectionChanged;
+            dataGridView1.DoubleClick += mListBox_DoubleClick;
+            // 
             // AddCellItemDialog
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(282, 533);
+            ClientSize = new Size(391, 533);
+            Controls.Add(dataGridView1);
             Controls.Add(mBtnSubmit);
-            Controls.Add(mListBox);
             Controls.Add(mTextBoxFilter);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "AddCellItemDialog";
             Text = "AddCellItemDialog";
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -78,7 +84,7 @@
         #endregion
 
         private TextBox mTextBoxFilter;
-        private ListBox mListBox;
         private Button mBtnSubmit;
+        private DataGridView dataGridView1;
     }
 }

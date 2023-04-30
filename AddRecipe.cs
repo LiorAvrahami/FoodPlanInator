@@ -15,21 +15,7 @@ namespace FoodPlanInator {
             InitializeComponent();
             reload_ingrediants_list();
             reload_all_recipes_list();
-
-            SelecttedIngrediants_View = new DataTable();
-            SelecttedIngrediants_View.Columns.Add("ingrediant_id");
-            SelecttedIngrediants_View.Columns[0].DefaultValue = 0;
-            SelecttedIngrediants_View.Columns.Add("name");
-            SelecttedIngrediants_View.Columns.Add("units");
-            SelecttedIngrediants_View.Columns.Add("amount");
-
-
-            mGridView_SelecttedIngrediants.DataSource = SelecttedIngrediants_View;
-            mGridView_SelecttedIngrediants.Columns[0].Visible = false;
-
-            foreach (DataGridViewColumn col in mGridView_SelecttedIngrediants.Columns) {
-                col.SortMode = DataGridViewColumnSortMode.NotSortable;
-            }
+            init_GridView();
         }
 
         // Ingrediants Logic
@@ -129,6 +115,40 @@ namespace FoodPlanInator {
         // Recipe Creator Logic
         DataTable SelecttedIngrediants_View;
 
+        void init_GridView() {
+
+            SelecttedIngrediants_View = new DataTable();
+            SelecttedIngrediants_View.Columns.Add("ingrediant_id");
+            SelecttedIngrediants_View.Columns[0].DefaultValue = 0;
+            SelecttedIngrediants_View.Columns.Add("name");
+            SelecttedIngrediants_View.Columns.Add("units");
+            SelecttedIngrediants_View.Columns.Add("amount");
+
+
+            mGridView_SelecttedIngrediants.DataSource = SelecttedIngrediants_View;
+            mGridView_SelecttedIngrediants.Columns[0].Visible = false;
+
+            foreach (DataGridViewColumn col in mGridView_SelecttedIngrediants.Columns) {
+                col.SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+
+            mGridView_SelecttedIngrediants.Columns[1].Width = 160;
+            mGridView_SelecttedIngrediants.Columns[2].Width = 80;
+            mGridView_SelecttedIngrediants.Columns[3].Width = 60;
+        }
+        private void fill_row(DataRow row, IngrediantAmmount new_ingrediant_ammount) {
+            Ingrediant cur_ingrediant = RecipiesArchiveIntf.get_Ingrediant(new_ingrediant_ammount.ingrediant_id);
+            row[0] = new_ingrediant_ammount.ingrediant_id;
+            row[1] = cur_ingrediant.name;
+            row[2] = cur_ingrediant.units;
+            row[3] = new_ingrediant_ammount.ammount;
+        }
+
+        private IngrediantAmmount row_index_to_ingrediant_ammount(int index) {
+            DataRow row = SelecttedIngrediants_View.Rows[index];
+            return new IngrediantAmmount(long.Parse((string)row[0]), float.Parse((string)row[3]));
+        }
+
         private bool ignore_selection_changed = false;
         private void mGridView_SelecttedIngrediants_SelectionChanged(object sender, EventArgs e) {
             if (this.ignore_selection_changed) { return; }
@@ -144,19 +164,6 @@ namespace FoodPlanInator {
         private int recipe_creator_get_selected_index() {
             if (mGridView_SelecttedIngrediants.SelectedCells.Count == 0) { return -1; }
             return mGridView_SelecttedIngrediants.SelectedCells[0].RowIndex;
-        }
-
-        private void fill_row(DataRow row, IngrediantAmmount new_ingrediant_ammount) {
-            Ingrediant cur_ingrediant = RecipiesArchiveIntf.get_Ingrediant(new_ingrediant_ammount.ingrediant_id);
-            row[0] = new_ingrediant_ammount.ingrediant_id;
-            row[1] = cur_ingrediant.name;
-            row[2] = cur_ingrediant.units;
-            row[3] = new_ingrediant_ammount.ammount;
-        }
-
-        private IngrediantAmmount row_index_to_ingrediant_ammount(int index) {
-            DataRow row = SelecttedIngrediants_View.Rows[index];
-            return new IngrediantAmmount(long.Parse((string)row[0]), float.Parse((string)row[3]));
         }
 
         private List<IngrediantAmmount> get_ingrediant_list() {
@@ -244,25 +251,6 @@ namespace FoodPlanInator {
             }
             RecipiesArchiveIntf.add_recipe(new_recipe);
             reload_all_recipes_list();
-        }
-
-        private void mRecipe_ListBox_KeyDown(object sender, KeyEventArgs e) {
-            if (e.KeyCode == Keys.Delete) {
-                if (recipe_creator_get_selected_index() != -1) {
-                    SelecttedIngrediants_View.Rows.RemoveAt(recipe_creator_get_selected_index());
-                }
-            }
-        }
-
-        int realSelecttedRecipeCreationIndex = -1;
-        private void mRecipe_ListBox_SelectedIndexChanged(object sender, EventArgs e) {
-            ListBox listBoxSender = (ListBox)sender;
-            realSelecttedRecipeCreationIndex = listBoxSender.SelectedIndex;
-            listBoxSender.Refresh();
-        }
-
-        private void mRecipe_ListBox_DrawItem(object sender, DrawItemEventArgs e) {
-            ListBoxUtil.DrawListBoxItem(realSelecttedRecipeCreationIndex, sender, e);
         }
 
 
