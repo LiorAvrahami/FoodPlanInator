@@ -45,8 +45,12 @@ namespace FoodPlanInator {
         
         public enum Catigory {
             // always add to the end for backwards compatibility.
-            NotVegetable = 42,
-            Vegetable
+            Monthly = 42,
+            Vegetables,
+            Packaged_Dual_Weekly,
+            Spices,
+
+
         }
 
         // each Ingrediant has some random id

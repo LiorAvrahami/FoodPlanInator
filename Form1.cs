@@ -240,8 +240,8 @@ namespace FoodPlanInator {
 
 
         class DayCell {
-            static int width = 199;
-            static int height = 115;
+            static int width = 155;
+            static int height = 100;
 
             static int start_x = 10;
             static int start_y = 10;
@@ -368,8 +368,28 @@ namespace FoodPlanInator {
         }
 
         private void mBtn_ExportToImage_Click(object sender, EventArgs e) {
+            void add_ingrediant(Dictionary<long, float> dict, IngrediantAmmount ingred) {
+                if (dict.ContainsKey(ingred.ingrediant_id)) {
+                    dict[ingred.ingrediant_id] += ingred.ammount;
+                } else {
+                    dict[ingred.ingrediant_id] = ingred.ammount;
+                }
+            }
+
+            string print_dictionary(Dictionary<long, float> dict) {
+                string ret = "";
+                foreach (KeyValuePair<long, float> entry in dict) {
+                    Ingrediant cur_ingrediant = RecipiesArchiveIntf.get_Ingrediant(entry.Key);
+                    ret += cur_ingrediant.name + "\t" + cur_ingrediant.units + "\t" + entry.Value + "\r\n";
+                }
+                return ret;
+            }
+
             // accumilate ingrediants
-            Dictionary<long, float> dry_ingrediant_accumilator = new Dictionary<long, float>();
+            Dictionary<long, float> month_list_accumilator = new Dictionary<long, float>();
+            Dictionary<long, float> week_1_list_accumilator = new Dictionary<long, float>();
+            Dictionary<long, float> week_3_list_accumilator = new Dictionary<long, float>();
+            Dictionary<long, float> spices_list_accumilator = new Dictionary<long, float>();
 
             foreach (var dayCell in dayCells) {
 
@@ -379,26 +399,75 @@ namespace FoodPlanInator {
 
                     foreach (IngrediantAmmount ingrediant in cur_recipe.ingrediants) {
                         Ingrediant cur_ingrediant = RecipiesArchiveIntf.get_Ingrediant(ingrediant.ingrediant_id);
-                        if (cur_ingrediant.catigory == Ingrediant.Catigory.NotVegetable) {
-                            if (dry_ingrediant_accumilator.ContainsKey(ingrediant.ingrediant_id)) {
-                                dry_ingrediant_accumilator[ingrediant.ingrediant_id] += ingrediant.ammount;
-                            } else {
-                                dry_ingrediant_accumilator[ingrediant.ingrediant_id] = ingrediant.ammount;
+                        switch (cur_ingrediant.catigory) {
+                            case Ingrediant.Catigory.Monthly: {
+                                add_ingrediant(month_list_accumilator, ingrediant);
+                                break;
+                            }
+                            case Ingrediant.Catigory.Vegetables: {
+                                if (dayCell.date.Day < 15) {
+                                    add_ingrediant(week_1_list_accumilator, ingrediant);
+                                } else {
+                                    add_ingrediant(week_3_list_accumilator, ingrediant);
+                                }
+                                break;
+                            }
+                            case Ingrediant.Catigory.Packaged_Dual_Weekly: {
+                                if (dayCell.date.Day < 15) {
+                                    add_ingrediant(month_list_accumilator, ingrediant);
+                                } else {
+                                    add_ingrediant(week_3_list_accumilator, ingrediant);
+                                }
+                                break;
+                            }
+                            case Ingrediant.Catigory.Spices: {
+                                add_ingrediant(spices_list_accumilator, ingrediant);
+                                break;
                             }
                         }
                     }
                 }
             }
 
-            string dry_buy_list = "";
 
-            foreach (KeyValuePair<long, float> entry in dry_ingrediant_accumilator) {
-                Ingrediant cur_ingrediant = RecipiesArchiveIntf.get_Ingrediant(entry.Key);
-                dry_buy_list += cur_ingrediant.name + "\t" + cur_ingrediant.units + "\t" + entry.Value + "\n";
+
+            // save calander to bitemap
+            string calander_image_file_name = "CalanderImage.png";
+            Draw_Clander_to_file(calander_image_file_name);
+
+
+            show_buy_lists_form buy_list_form = new show_buy_lists_form();
+            buy_list_form.init(
+                print_dictionary(month_list_accumilator),
+                print_dictionary(week_1_list_accumilator),
+                print_dictionary(week_3_list_accumilator),
+                print_dictionary(spices_list_accumilator),
+                calander_image_file_name
+                );
+            buy_list_form.Show();
+        }
+
+        bool printing = false;
+        protected void Draw_Clander_to_file(string calander_image_file_name) {
+            Bitmap bmp = new Bitmap(panel1.Width, panel1.Height);
+            printing = true;
+
+
+            Control[] controls = new Control[panel1.Controls.Count];
+            panel1.Controls.CopyTo(controls, 0);
+
+            foreach (Control c in controls)
+                c.BringToFront();
+
+            panel1.DrawToBitmap(bmp, new System.Drawing.Rectangle(0, 0, panel1.Width, panel1.Height));
+
+
+            for (int i = controls.Length - 1; i >= 0; i--) {
+                controls[i].BringToFront();
             }
 
-            MessageBox.Show(dry_buy_list);
-
+            bmp.Save(calander_image_file_name, System.Drawing.Imaging.ImageFormat.Png); //you could ave in BPM, PNG  etc format.
         }
+
     }
 }

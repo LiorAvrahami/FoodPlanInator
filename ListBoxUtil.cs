@@ -23,9 +23,9 @@ namespace FoodPlanInator {
             // Draw the background of the ListBox control for each item.
             e.Graphics.FillRectangle(brush, e.Bounds);
             // Draw the current item text based on the current Font 
-            // and the custom brush settings.
+            Rectangle rect = new Rectangle(e.Bounds.X, e.Bounds.Y - 2, e.Bounds.Width, e.Bounds.Height + 10);
             e.Graphics.DrawString(listBoxSender.Items[e.Index].ToString(),
-                e.Font, Brushes.Black, e.Bounds, StringFormat.GenericDefault);
+                e.Font, Brushes.Black, rect, StringFormat.GenericDefault);
         }
     }
 }
