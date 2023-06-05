@@ -17,17 +17,46 @@ namespace FoodPlanInator {
         string name = "";
         string units = "";
         float price = -1;
-        Ingrediant.Catigory catigory;
+
+        // shops where this item can be bout at
+        public List<long> selectted_shops_ids = new List<long>();
+
+        // number of days this item is good for
+        int num_days_is_good;
+
 
         long IngrediantId_priv;
 
         bool isSubmitted = false;
 
+        void fill_shops_checklist() {
+            this.mChkBxListShops.Items.Clear();
+            foreach (Shop shop in RecipiesArchiveIntf.get_all_shops()) {
+                this.mChkBxListShops.Items.Add(shop.name);
+                if (selectted_shops_ids.Contains(shop.id)) {
+                    this.mChkBxListShops.SetItemChecked(this.mChkBxListShops.Items.Count - 1, true);
+                }
+            }
+        }
+
+        void assert_shops_didnt_change() {
+            List<Shop> shops = RecipiesArchiveIntf.get_all_shops();
+            if (RecipiesArchiveIntf.get_all_shops().Count != mChkBxListShops.Items.Count) {
+                throw new Exception("error shops changed outside of form");
+            }
+
+            for (int i = 0; i < this.mChkBxListShops.Items.Count; i++) {
+                if (shops[i].name != (string)this.mChkBxListShops.Items[i]) {
+                    throw new Exception("error shops changed outside of form");
+                }
+            }
+        }
+
         public static long AddNew() {
             AddIngrediantForm temp = new AddIngrediantForm();
             temp.ShowDialog();
             if (temp.isSubmitted) {
-                RecipiesArchiveIntf.add_Ingrediant(new Ingrediant(RecipiesArchiveIntf.get_unused_id(), temp.name, temp.units, temp.price, temp.catigory));
+                RecipiesArchiveIntf.add_Ingrediant(new Ingrediant(RecipiesArchiveIntf.get_unused_id(), temp.name, temp.units, temp.price, temp.selectted_shops_ids, temp.num_days_is_good));
                 return temp.get_IngrediantId();
             } else {
                 return 0;
@@ -42,7 +71,8 @@ namespace FoodPlanInator {
                 Ingrediant.name = temp.name;
                 Ingrediant.units = temp.units;
                 Ingrediant.price = temp.price;
-                Ingrediant.catigory = temp.catigory;
+                Ingrediant.shops_ids = new List<long>(temp.selectted_shops_ids);
+                Ingrediant.num_days_is_good = temp.num_days_is_good;
             }
             RecipiesArchiveIntf.save();
         }
@@ -52,13 +82,14 @@ namespace FoodPlanInator {
             name = RecipiesArchiveIntf.get_Ingrediant(val).name;
             units = RecipiesArchiveIntf.get_Ingrediant(val).units;
             price = RecipiesArchiveIntf.get_Ingrediant(val).price;
-            catigory = RecipiesArchiveIntf.get_Ingrediant(val).catigory;
+            selectted_shops_ids = new List<long>(RecipiesArchiveIntf.get_Ingrediant(val).shops_ids);
+            num_days_is_good = RecipiesArchiveIntf.get_Ingrediant(val).num_days_is_good;
 
+            fill_shops_checklist();
             mTxtBx_Name.Text = name;
             mTxtBx_Units.Text = units;
             mTxtBxAmmount.Text = price.ToString();
-            mCombo_Catigory.Text = catigory.ToString();
-
+            mTxtNumDays.Text = num_days_is_good.ToString();
         }
 
         long get_IngrediantId() { return IngrediantId_priv; }
@@ -83,7 +114,22 @@ namespace FoodPlanInator {
                 MessageBox.Show("Price must be number");
                 return;
             }
-            this.catigory = Enum.Parse<Ingrediant.Catigory>(mCombo_Catigory.Text);
+            try {
+                this.num_days_is_good = int.Parse(mTxtNumDays.Text);
+            } catch (Exception ex) {
+                MessageBox.Show("Price must be number");
+                return;
+            }
+
+            selectted_shops_ids.Clear();
+            assert_shops_didnt_change();
+            List<Shop> shops = RecipiesArchiveIntf.get_all_shops();
+            for (int i = 0; i < this.mChkBxListShops.Items.Count; i++) {
+                if (mChkBxListShops.GetItemChecked(i)) {
+                    selectted_shops_ids.Add(shops[i].id);
+                }
+            }
+
             this.isSubmitted = true;
             Close();
         }
@@ -97,7 +143,7 @@ namespace FoodPlanInator {
         }
 
         private void AddIngrediantForm_Load(object sender, EventArgs e) {
-            mCombo_Catigory.Items.AddRange(Enum.GetNames(typeof(Ingrediant.Catigory)));
+            fill_shops_checklist();
         }
     }
 }

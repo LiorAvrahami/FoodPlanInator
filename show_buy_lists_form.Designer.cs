@@ -23,109 +23,74 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            mTxtMonth = new TextBox();
-            mTxtStoreBWeek1 = new TextBox();
-            mTxtStoreBWeek3 = new TextBox();
-            mTxtSpices = new TextBox();
-            label1 = new Label();
-            label2 = new Label();
-            label3 = new Label();
-            label4 = new Label();
-            mBtnOpenCalanderImage = new Button();
+            mTxtBx = new TextBox();
+            mLable_Title = new Label();
+            mBtnBack = new Button();
+            mBtnNext = new Button();
+            mBtnCopy = new Button();
             SuspendLayout();
             // 
-            // mTxtMonth
+            // mTxtBx
             // 
-            mTxtMonth.Location = new Point(17, 43);
-            mTxtMonth.Multiline = true;
-            mTxtMonth.Name = "mTxtMonth";
-            mTxtMonth.Size = new Size(252, 444);
-            mTxtMonth.TabIndex = 0;
+            mTxtBx.Location = new Point(10, 33);
+            mTxtBx.Multiline = true;
+            mTxtBx.Name = "mTxtBx";
+            mTxtBx.Size = new Size(317, 404);
+            mTxtBx.TabIndex = 0;
             // 
-            // mTxtStoreBWeek1
+            // mLable_Title
             // 
-            mTxtStoreBWeek1.Location = new Point(275, 43);
-            mTxtStoreBWeek1.Multiline = true;
-            mTxtStoreBWeek1.Name = "mTxtStoreBWeek1";
-            mTxtStoreBWeek1.Size = new Size(252, 444);
-            mTxtStoreBWeek1.TabIndex = 1;
+            mLable_Title.AutoSize = true;
+            mLable_Title.BackColor = Color.FromArgb(255, 224, 192);
+            mLable_Title.BorderStyle = BorderStyle.FixedSingle;
+            mLable_Title.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            mLable_Title.Location = new Point(10, 9);
+            mLable_Title.Name = "mLable_Title";
+            mLable_Title.Size = new Size(94, 23);
+            mLable_Title.TabIndex = 4;
+            mLable_Title.Text = "NOT FILLED";
+            mLable_Title.Click += mLable_Title_Click;
             // 
-            // mTxtStoreBWeek3
+            // mBtnBack
             // 
-            mTxtStoreBWeek3.Location = new Point(533, 43);
-            mTxtStoreBWeek3.Multiline = true;
-            mTxtStoreBWeek3.Name = "mTxtStoreBWeek3";
-            mTxtStoreBWeek3.Size = new Size(260, 444);
-            mTxtStoreBWeek3.TabIndex = 2;
+            mBtnBack.Location = new Point(10, 445);
+            mBtnBack.Name = "mBtnBack";
+            mBtnBack.Size = new Size(100, 47);
+            mBtnBack.TabIndex = 8;
+            mBtnBack.Text = "Back";
+            mBtnBack.UseVisualStyleBackColor = true;
+            mBtnBack.Click += mBtnBack_Click;
             // 
-            // mTxtSpices
+            // mBtnNext
             // 
-            mTxtSpices.Location = new Point(799, 43);
-            mTxtSpices.Multiline = true;
-            mTxtSpices.Name = "mTxtSpices";
-            mTxtSpices.Size = new Size(260, 343);
-            mTxtSpices.TabIndex = 3;
+            mBtnNext.Location = new Point(227, 445);
+            mBtnNext.Name = "mBtnNext";
+            mBtnNext.Size = new Size(100, 47);
+            mBtnNext.TabIndex = 9;
+            mBtnNext.Text = "Next";
+            mBtnNext.UseVisualStyleBackColor = true;
+            mBtnNext.Click += mBtnNext_Click;
             // 
-            // label1
+            // mBtnCopy
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(17, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(81, 15);
-            label1.TabIndex = 4;
-            label1.Text = "StoreA Month";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(275, 9);
-            label2.Name = "label2";
-            label2.Size = new Size(119, 15);
-            label2.TabIndex = 5;
-            label2.Text = "StoreB Weeks 1 and 2";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(533, 9);
-            label3.Name = "label3";
-            label3.Size = new Size(119, 15);
-            label3.TabIndex = 6;
-            label3.Text = "StoreB Weeks 3 and 4";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(799, 9);
-            label4.Name = "label4";
-            label4.Size = new Size(40, 15);
-            label4.TabIndex = 7;
-            label4.Text = "Spices";
-            // 
-            // mBtnOpenCalanderImage
-            // 
-            mBtnOpenCalanderImage.Location = new Point(799, 392);
-            mBtnOpenCalanderImage.Name = "mBtnOpenCalanderImage";
-            mBtnOpenCalanderImage.Size = new Size(260, 95);
-            mBtnOpenCalanderImage.TabIndex = 8;
-            mBtnOpenCalanderImage.Text = "open calander image";
-            mBtnOpenCalanderImage.UseVisualStyleBackColor = true;
-            mBtnOpenCalanderImage.Click += mBtnOpenCalanderImage_Click;
+            mBtnCopy.Location = new Point(120, 445);
+            mBtnCopy.Name = "mBtnCopy";
+            mBtnCopy.Size = new Size(100, 47);
+            mBtnCopy.TabIndex = 10;
+            mBtnCopy.Text = "Copy";
+            mBtnCopy.UseVisualStyleBackColor = true;
+            mBtnCopy.Click += mBtnCopy_Click;
             // 
             // show_buy_lists_form
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1071, 502);
-            Controls.Add(mBtnOpenCalanderImage);
-            Controls.Add(label4);
-            Controls.Add(label3);
-            Controls.Add(label2);
-            Controls.Add(label1);
-            Controls.Add(mTxtSpices);
-            Controls.Add(mTxtStoreBWeek3);
-            Controls.Add(mTxtStoreBWeek1);
-            Controls.Add(mTxtMonth);
+            ClientSize = new Size(339, 502);
+            Controls.Add(mBtnCopy);
+            Controls.Add(mBtnNext);
+            Controls.Add(mBtnBack);
+            Controls.Add(mLable_Title);
+            Controls.Add(mTxtBx);
             Name = "show_buy_lists_form";
             Text = "show_buy_lists_form";
             ResumeLayout(false);
@@ -134,14 +99,20 @@
 
         #endregion
 
-        private TextBox mTxtMonth;
+        private TextBox mTxtBx;
         private TextBox mTxtStoreBWeek1;
-        private TextBox mTxtStoreBWeek3;
+        private TextBox mTxtStoreBWeek2;
         private TextBox mTxtSpices;
-        private Label label1;
+        private Label mLable_Title;
         private Label label2;
         private Label label3;
         private Label label4;
-        private Button mBtnOpenCalanderImage;
+        private Button mBtnBack;
+        private Button mBtnNext;
+        private Label label5;
+        private Label label6;
+        private TextBox mTxtStoreBWeek4;
+        private TextBox mTxtStoreBWeek3;
+        private Button mBtnCopy;
     }
 }

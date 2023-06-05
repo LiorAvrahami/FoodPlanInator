@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
@@ -13,6 +14,11 @@ namespace FoodPlanInator {
         DateTime end_date;
 
         List<DayCell> dayCells = new List<DayCell>();
+
+        int get_number_of_sundays_before_date(DateTime date) {
+            DateTime start_of_month = date.AddDays(-1 * date.Day);
+            return ((int)start_of_month.DayOfWeek + date.Day - 1) / 7;
+        }
 
         int findDayCell(ListBox listbox) {
             for (int i = 0; i < dayCells.Count; i++) {
@@ -239,7 +245,7 @@ namespace FoodPlanInator {
         }
 
 
-        class DayCell {
+        public class DayCell {
             static int width = 155;
             static int height = 100;
 
@@ -368,82 +374,21 @@ namespace FoodPlanInator {
         }
 
         private void mBtn_ExportToImage_Click(object sender, EventArgs e) {
-            void add_ingrediant(Dictionary<long, float> dict, IngrediantAmmount ingred) {
-                if (dict.ContainsKey(ingred.ingrediant_id)) {
-                    dict[ingred.ingrediant_id] += ingred.ammount;
-                } else {
-                    dict[ingred.ingrediant_id] = ingred.ammount;
-                }
-            }
-
-            string print_dictionary(Dictionary<long, float> dict) {
-                string ret = "";
-                foreach (KeyValuePair<long, float> entry in dict) {
-                    Ingrediant cur_ingrediant = RecipiesArchiveIntf.get_Ingrediant(entry.Key);
-                    ret += cur_ingrediant.name + "\t" + cur_ingrediant.units + "\t" + entry.Value + "\r\n";
-                }
-                return ret;
-            }
-
-            // accumilate ingrediants
-            Dictionary<long, float> month_list_accumilator = new Dictionary<long, float>();
-            Dictionary<long, float> week_1_list_accumilator = new Dictionary<long, float>();
-            Dictionary<long, float> week_3_list_accumilator = new Dictionary<long, float>();
-            Dictionary<long, float> spices_list_accumilator = new Dictionary<long, float>();
-
-            foreach (var dayCell in dayCells) {
-
-                foreach (long recipeId in dayCell.mRecipeIdList) {
-
-                    Recipe cur_recipe = RecipiesArchiveIntf.get_recipe(recipeId);
-
-                    foreach (IngrediantAmmount ingrediant in cur_recipe.ingrediants) {
-                        Ingrediant cur_ingrediant = RecipiesArchiveIntf.get_Ingrediant(ingrediant.ingrediant_id);
-                        switch (cur_ingrediant.catigory) {
-                            case Ingrediant.Catigory.Monthly: {
-                                add_ingrediant(month_list_accumilator, ingrediant);
-                                break;
-                            }
-                            case Ingrediant.Catigory.Vegetables: {
-                                if (dayCell.date.Day < 15) {
-                                    add_ingrediant(week_1_list_accumilator, ingrediant);
-                                } else {
-                                    add_ingrediant(week_3_list_accumilator, ingrediant);
-                                }
-                                break;
-                            }
-                            case Ingrediant.Catigory.Packaged_Dual_Weekly: {
-                                if (dayCell.date.Day < 15) {
-                                    add_ingrediant(month_list_accumilator, ingrediant);
-                                } else {
-                                    add_ingrediant(week_3_list_accumilator, ingrediant);
-                                }
-                                break;
-                            }
-                            case Ingrediant.Catigory.Spices: {
-                                add_ingrediant(spices_list_accumilator, ingrediant);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-
-
             // save calander to bitemap
             string calander_image_file_name = "CalanderImage.png";
             Draw_Clander_to_file(calander_image_file_name);
 
+            string args = string.Format("/e, /select, \"{0}\"", calander_image_file_name);
+
+            Process.Start("explorer.exe", args);
+
+            // show buy lists
+
+
+            (List<string> titles, List<string> list) = Export.get_buy_lists(dayCells);
 
             show_buy_lists_form buy_list_form = new show_buy_lists_form();
-            buy_list_form.init(
-                print_dictionary(month_list_accumilator),
-                print_dictionary(week_1_list_accumilator),
-                print_dictionary(week_3_list_accumilator),
-                print_dictionary(spices_list_accumilator),
-                calander_image_file_name
-                );
+            buy_list_form.init(titles, list);
             buy_list_form.Show();
         }
 

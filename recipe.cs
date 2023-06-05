@@ -39,36 +39,10 @@ namespace FoodPlanInator {
         public Ingrediant get_ingrediant() { 
             return RecipiesArchiveIntf.get_Ingrediant(ingrediant_id);
         }
-    }
 
-    class Ingrediant {
-        
-        public enum Catigory {
-            // always add to the end for backwards compatibility.
-            Monthly = 42,
-            Vegetables,
-            Packaged_Dual_Weekly,
-            Spices,
-
-
+        public string print() {
+            Ingrediant ingred = RecipiesArchiveIntf.get_Ingrediant(ingrediant_id);
+            return ingred.name + "\t" + ingred.units + "\t" + string.Format("0:0.00", ammount);
         }
-
-        // each Ingrediant has some random id
-        public long id;
-
-        public string name;
-        public string units;
-        public float price = -1;
-
-        public Catigory catigory;
-
-        public Ingrediant(long id, string name, string units, float price, Catigory catigory) {
-            this.id = id;
-            this.name = name;
-            this.units = units;
-            this.price = price;
-            this.catigory = catigory;
-        }
-
     }
 }

@@ -31,7 +31,6 @@
             mBtn_SelectMonth = new Button();
             panel1 = new Panel();
             MonthLabel = new Label();
-            listBox1 = new ListBox();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -110,22 +109,11 @@
             MonthLabel.TabIndex = 0;
             MonthLabel.Text = "label1";
             // 
-            // listBox1
-            // 
-            listBox1.FormattingEnabled = true;
-            listBox1.ItemHeight = 15;
-            listBox1.Items.AddRange(new object[] { "קמון קל", "גמל ישן", "קקוס" });
-            listBox1.Location = new Point(476, 12);
-            listBox1.Name = "listBox1";
-            listBox1.Size = new Size(120, 49);
-            listBox1.TabIndex = 7;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1123, 768);
-            Controls.Add(listBox1);
             Controls.Add(panel1);
             Controls.Add(mBtn_SelectMonth);
             Controls.Add(mBtn_LoadJson);
@@ -150,6 +138,5 @@
         private Button mBtn_SelectMonth;
         private Panel panel1;
         private Label MonthLabel;
-        private ListBox listBox1;
     }
 }

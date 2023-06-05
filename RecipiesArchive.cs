@@ -1,4 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿global using ShopId = System.Int64;
+global using ingrediantId = System.Int64;
+global using RecipeId = System.Int64;
+
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace FoodPlanInator {
-    // interface for recipe and ingrediant archive
+
+    // interface for settings archive, contains the recipies, ingrediants, and the stores
     class RecipiesArchiveIntf {
         public static string get_RecipiesArchive_file_path() {
             //This will give us the full name path of the executable file:
@@ -37,12 +42,20 @@ namespace FoodPlanInator {
             return RecipiesArchivePriv.global_instance.get_all_ingrediants();
         }
 
+        public static List<Shop> get_all_shops() {
+            return RecipiesArchivePriv.global_instance.get_all_shops();
+        }
+
         public static Recipe get_recipe(long Id) {
             return RecipiesArchivePriv.global_instance.get_recipe(Id);
         }
 
         public static Ingrediant get_Ingrediant(long Id) {
             return RecipiesArchivePriv.global_instance.get_Ingrediant(Id);
+        }
+
+        public static Shop get_shop(ShopId Id) {
+            return RecipiesArchivePriv.global_instance.get_shop(Id);
         }
 
         public static long get_unused_id() {
@@ -90,14 +103,31 @@ namespace FoodPlanInator {
             [JsonProperty]
             List<Ingrediant> Ingrediant_list;
 
+            // currently not saved to json
+            List<Shop> shop_list;
+
             public RecipiesArchivePriv() {
                 recipes_list = new List<Recipe>();
                 Ingrediant_list = new List<Ingrediant>();
+                shop_list = new List<Shop>();
             }
 
             public List<Recipe> get_all_recipes() { return recipes_list; }
 
             public List<Ingrediant> get_all_ingrediants() { return Ingrediant_list; }
+
+            public List<Shop> get_all_shops() {
+                return shop_list;
+            }
+            public Shop get_shop(ShopId Id) {
+                foreach (Shop shop in shop_list) {
+                    if (shop.id == Id) {
+                        return shop;
+                    }
+                }
+                return null;
+            }
+
 
             public Recipe get_recipe(long Id) {
                 foreach (var recipe in recipes_list) {
@@ -133,8 +163,8 @@ namespace FoodPlanInator {
             }
 
             public void add_Ingrediant(Ingrediant ingrediant) {
-                if(ingrediant.name != null )
-                Ingrediant_list.Add(ingrediant);
+                if (ingrediant.name != null)
+                    Ingrediant_list.Add(ingrediant);
                 this.save();
             }
             public void save() {
