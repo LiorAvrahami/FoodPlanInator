@@ -13,6 +13,25 @@ namespace FoodPlanInator {
 
         public long id;
 
+        public bool make_legal() {
+            bool is_legal = true;
+            if (id == 0) {
+                is_legal = false;
+                throw new Exception("Shop has id 0");
+            }
+            if (name == null) {
+                is_legal = false;
+                name = "EMPTY NAME";
+                Log.print("shop with Id " + id.ToString() + " has empty name, name was reset to be " + name);                
+            }
+            if (maximum_visits_per_month < 0) {
+                is_legal = false;
+                maximum_visits_per_month = 0;
+                Log.print("shop with name " + name + " has incorrect maximum_visits_per_month, resetting to infinity");
+            }
+            return is_legal;
+        }
+
         // for the meanwhile Shops are going to be statically created (no interface for creating/saving/loading Shops)
         public Shop[] make_Shops_array() {
             Shop[] ret = new Shop[2];

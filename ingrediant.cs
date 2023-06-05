@@ -27,18 +27,72 @@ namespace FoodPlanInator {
         // shops where this item can be bout at
         public List<long> shops_ids = new List<long>();
 
-        // number of days this item is good for
+        // number of days this item is good for. 0 is infinity.
         public int num_days_is_good;
 
-        
-
-        public Ingrediant(long id, string name, string units, float price, List<long> shops_ids,int num_days_is_good) {
+        public Ingrediant(long id, string name, string units, float price, List<long> shops_ids, int num_days_is_good) {
             this.id = id;
             this.name = name;
             this.units = units;
             this.price = price;
             this.shops_ids = shops_ids;
             this.num_days_is_good = num_days_is_good;
+        }
+
+        public bool make_legal() {
+            bool is_legal = true;
+            if (id == 0) {
+                is_legal = false;
+                throw new Exception("ingrediant has id 0");
+            }
+            if (name == null) {
+                is_legal = false;
+                name = "EMPTY NAME";
+                Log.print("ingrediant with Id " + id.ToString() + " has empty name, name was reset to be " + name);
+            }
+            if (units == null) {
+                is_legal = false;
+                units = "EMPTY UNITS";
+                Log.print("ingrediant with name " + name + " has empty units, units was reset to be " + units);
+            }
+            if (catigory != Catigory.Monthly && catigory != Catigory.Vegetables) {
+
+            }
+            if (catigory == Catigory.Monthly) {
+                if (shops_ids == null) {
+                    is_legal = false;
+                    shops_ids = new List<long>(117);
+                    Log.print("ingrediant with name " + name + " has null shops_ids list, it was reset to be ShopA");
+                }
+                if (num_days_is_good < 0) {
+                    is_legal = false;
+                    num_days_is_good = 60;
+                    Log.print("ingrediant with name " + name + " has negative num_days_is_good, it was reset to be 60");
+                }
+            } else if (catigory == Catigory.Vegetables) {
+                if (shops_ids == null) {
+                    is_legal = false;
+                    shops_ids = new List<long>(118);
+                    Log.print("ingrediant with name " + name + " has null shops_ids list, it was reset to be ShopB");
+                }
+                if (num_days_is_good < 0) {
+                    is_legal = false;
+                    num_days_is_good = 7;
+                    Log.print("ingrediant with name " + name + " has negative num_days_is_good, it was reset to be 7");
+                }
+            } else {
+                if (shops_ids == null) {
+                    is_legal = false;
+                    shops_ids = new List<long>();
+                    Log.print("ingrediant with name " + name + " has null shops_ids list, it was reset to be empty");
+                }
+                if (num_days_is_good < 0) {
+                    is_legal = false;
+                    num_days_is_good = 0;
+                    Log.print("ingrediant with name " + name + " has negative num_days_is_good, it was reset to be 0");
+                }
+            }
+            return is_legal;
         }
 
     }

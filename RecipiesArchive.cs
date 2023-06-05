@@ -28,6 +28,7 @@ namespace FoodPlanInator {
                 // try load local file
                 string json_text = File.ReadAllText(get_RecipiesArchive_file_path());
                 RecipiesArchivePriv.global_instance = JsonConvert.DeserializeObject<RecipiesArchivePriv>(json_text);
+
             } catch { }
             if (RecipiesArchivePriv.global_instance == null) {
                 RecipiesArchivePriv.global_instance = new RecipiesArchivePriv();
@@ -112,6 +113,29 @@ namespace FoodPlanInator {
                 shop_list = new List<Shop>();
             }
 
+            public bool make_legal() {
+                bool was_legal = true;
+                foreach (var recipe in recipes_list)
+                {
+                    if (recipe.make_legal() == false) {
+                        was_legal = false;
+                    }
+                }
+                foreach (var ingrediant in Ingrediant_list)
+                {
+                    if (ingrediant.make_legal() == false) {
+                        was_legal = false;
+                    }
+                }
+                foreach (var shop in shop_list)
+                {
+                    if (shop.make_legal() == false) {
+                        was_legal = false;
+                    }
+                }
+                return was_legal;
+            }
+
             public List<Recipe> get_all_recipes() { return recipes_list; }
 
             public List<Ingrediant> get_all_ingrediants() { return Ingrediant_list; }
@@ -150,7 +174,7 @@ namespace FoodPlanInator {
             public long get_unused_id() {
                 while (true) {
                     long candadit = RecipiesArchivePriv.global_instance.random.NextInt64();
-                    if (candadit != 0 && !ingrediant_exists(candadit) && !recipe_exists(candadit)) {
+                    if (candadit != 0 && !ingrediant_exists(candadit) && !recipe_exists(candadit) && !shop_exists(candadit)) {
                         return candadit;
                     }
                 }
@@ -203,6 +227,10 @@ namespace FoodPlanInator {
 
             public bool recipe_exists(long Id) {
                 return get_recipe(Id) != null;
+            }
+
+            public bool shop_exists(ShopId id) {
+                return get_shop(id) != null;
             }
         }
     }
