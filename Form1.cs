@@ -42,6 +42,8 @@ namespace FoodPlanInator {
         public Form1() {
             InitializeComponent();
 
+            this.Text = "Food PlanInator v" + AppVersion.get_version().ToString();
+
             RecipiesArchiveIntf.init();
 
             start_date = new DateTime(2023, (int)Math.Round(DateTime.Now.Month + DateTime.Now.Day / 30.0), 1);
