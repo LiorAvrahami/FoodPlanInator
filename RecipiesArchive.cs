@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace FoodPlanInator {
 
@@ -21,18 +23,29 @@ namespace FoodPlanInator {
             //C:\Program Files\MyApplication
             string strWorkPath = Path.GetDirectoryName(strExeFilePath);
 
-            return Path.Combine(strWorkPath, "FoodPlanInator_RecipiesArchive.json");
+            string base_name = "FoodPlanInator_RecipiesArchive";
+
+            Regex reg = new Regex(base_name + "[0-9]*.json");
+            string file_name = Directory.GetFiles(strWorkPath, "*.json").Where(path => reg.IsMatch(path)).First();
+
+            return Path.Combine(strWorkPath, file_name);
         }
         public static void init() {
             try {
                 // try load local file
                 string json_text = File.ReadAllText(get_RecipiesArchive_file_path());
                 RecipiesArchivePriv.global_instance = JsonConvert.DeserializeObject<RecipiesArchivePriv>(json_text);
-
+                bool was_legal = RecipiesArchivePriv.global_instance.make_legal();
+                if (!was_legal) {
+                    MessageBox.Show("some errors/version inconsistancies were found and fixed in the recipies archive file. for more info go to the file nammmed Log.txt");
+                }
             } catch { }
             if (RecipiesArchivePriv.global_instance == null) {
                 RecipiesArchivePriv.global_instance = new RecipiesArchivePriv();
             }
+
+            //DOTO this is temperary
+            RecipiesArchivePriv.global_instance.init_shops();
         }
 
         public static List<Recipe> get_all_recipes() {
@@ -231,6 +244,10 @@ namespace FoodPlanInator {
 
             public bool shop_exists(ShopId id) {
                 return get_shop(id) != null;
+            }
+
+            public void init_shops() {
+                this.shop_list = new List<Shop>(Shop.make_Shops_array());
             }
         }
     }

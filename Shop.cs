@@ -22,7 +22,7 @@ namespace FoodPlanInator {
             if (name == null) {
                 is_legal = false;
                 name = "EMPTY NAME";
-                Log.print("shop with Id " + id.ToString() + " has empty name, name was reset to be " + name);                
+                Log.print("shop with Id " + id.ToString() + " has empty name, name was reset to be " + name);
             }
             if (maximum_visits_per_month < 0) {
                 is_legal = false;
@@ -33,25 +33,27 @@ namespace FoodPlanInator {
         }
 
         // for the meanwhile Shops are going to be statically created (no interface for creating/saving/loading Shops)
-        public Shop[] make_Shops_array() {
+        public static Shop[] make_Shops_array() {
             Shop[] ret = new Shop[2];
-            
+
+            ret[0] = new Shop();
             ret[0].name = "ShopA";
             ret[0].maximum_visits_per_month = 1;
             // just some number
             ret[0].id = 117;
 
-            ret[0].name = "ShopB";
-            ret[0].maximum_visits_per_month = 0;
+            ret[1] = new Shop();
+            ret[1].name = "ShopB";
+            ret[1].maximum_visits_per_month = 0;
             // just some number
-            ret[0].id = 118;
+            ret[1].id = 118;
 
             return ret;
         }
 
         // return true if ammont of visits to this store is not too large.
         public bool is_too_many_visits(int num_visits_in_month) {
-            bool is_num_visits_valid = (maximum_visits_per_month == 0) || (maximum_visits_per_month > num_visits_in_month);
+            bool is_num_visits_valid = (maximum_visits_per_month == 0) || (maximum_visits_per_month >= num_visits_in_month);
             return !is_num_visits_valid;
         }
     }

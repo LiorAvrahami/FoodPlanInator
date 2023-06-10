@@ -61,7 +61,7 @@ namespace FoodPlanInator {
 
         public string print() {
             Ingrediant ingred = RecipiesArchiveIntf.get_Ingrediant(ingrediant_id);
-            return ingred.name + "\t" + ingred.units + "\t" + string.Format("0:0.00", ammount);
+            return ingred.name + "\t" + ingred.units + "\t" + ammount.ToString("0.00") + "\r\n";
         }
     }
 }

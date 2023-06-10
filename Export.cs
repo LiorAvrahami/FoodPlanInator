@@ -18,6 +18,10 @@ namespace FoodPlanInator {
             this.shop_id = shop_id;
         }
 
+        public ShopId get_shop_id() {
+            return shop_id;
+        }
+
         public bool try_add(IngrediantAmmount ingrediant_ammount, DateTime date) {
             // if is first
             if (ammount_map.Count == 0) {
@@ -48,7 +52,7 @@ namespace FoodPlanInator {
         public string make_list() {
             string ret = "";
             foreach (ingrediantId ingred_id in ammount_map.Keys) {
-                
+
                 IngrediantAmmount a = new IngrediantAmmount(ingred_id, ammount_map[ingred_id]);
                 ret += a.print();
             }
@@ -59,23 +63,36 @@ namespace FoodPlanInator {
     class ShopCollectionAccumilators {
         Dictionary<ShopId, BuyListAccumilator> active_accumilators;
         List<BuyListAccumilator> all_accumilators;
-        Dictionary<ShopId, int> num_accumilators_per_shop;
 
         public ShopCollectionAccumilators() {
             active_accumilators = new Dictionary<ShopId, BuyListAccumilator>();
             all_accumilators = new List<BuyListAccumilator>();
         }
 
+        public int get_num_accumilators_per_shop(ShopId shop_id) {
+            int ret = 0;
+            foreach (BuyListAccumilator accum in all_accumilators) {
+                if (accum.get_shop_id() == shop_id) {
+                    ret += 1;
+                }
+            }
+            return ret;
+        }
+
         public bool try_add_accumilator(ShopId shop_id) {
-            if(RecipiesArchiveIntf.get_shop(shop_id).is_too_many_visits(num_accumilators_per_shop[shop_id] + 1)){
+            if (RecipiesArchiveIntf.get_shop(shop_id).is_too_many_visits(get_num_accumilators_per_shop(shop_id) + 1)) {
                 return false;
             }
             BuyListAccumilator new_accum = new BuyListAccumilator(shop_id);
             all_accumilators.Add(new_accum);
-            active_accumilators[shop_id] = new_accum;
+            if (!active_accumilators.ContainsKey(shop_id)) {
+                active_accumilators.Add(shop_id, new_accum);
+            } else {
+                active_accumilators[shop_id] = new_accum;
+            }
             return true;
         }
-         
+
         public BuyListAccumilator get_current_buy_list(ShopId shop_id) {
             if (!active_accumilators.ContainsKey(shop_id)) {
                 try_add_accumilator(shop_id);
@@ -99,6 +116,11 @@ namespace FoodPlanInator {
                 foreach (ShopId shop_id in ingred_ammount.get_ingrediant().shops_ids) {
                     success = try_add_accumilator(shop_id);
                     if (success) {
+                        // add ingrediant
+                        success = this.get_current_buy_list(shop_id).try_add(ingred_ammount, date_used);
+                        if (!success) {
+                            throw new Exception("UNEXPECTTED ERROR: failed to add ingrediant to empty buy list");
+                        }
                         break;
                     }
                 }
@@ -122,13 +144,12 @@ namespace FoodPlanInator {
             List<string> titles = new List<string>();
             List<string> list = new List<string>();
 
-            foreach (BuyListAccumilator accum in accum_list)
-            {
+            foreach (BuyListAccumilator accum in accum_list) {
                 titles.Add(accum.make_title());
-                titles.Add(accum.make_list());
+                list.Add(accum.make_list());
             }
 
-            return (titles,list);
+            return (titles, list);
 
         }
 

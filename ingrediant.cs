@@ -59,34 +59,42 @@ namespace FoodPlanInator {
 
             }
             if (catigory == Catigory.Monthly) {
+                bool reset_num_days_is_good = false;
                 if (shops_ids == null) {
                     is_legal = false;
-                    shops_ids = new List<long>(117);
+                    shops_ids = new List<long>();
+                    shops_ids.Add(117);
                     Log.print("ingrediant with name " + name + " has null shops_ids list, it was reset to be ShopA");
+                    reset_num_days_is_good = true;
                 }
-                if (num_days_is_good < 0) {
+                if (num_days_is_good < 0 || reset_num_days_is_good) {
                     is_legal = false;
                     num_days_is_good = 60;
                     Log.print("ingrediant with name " + name + " has negative num_days_is_good, it was reset to be 60");
                 }
             } else if (catigory == Catigory.Vegetables) {
+                bool reset_num_days_is_good = false;
                 if (shops_ids == null) {
                     is_legal = false;
-                    shops_ids = new List<long>(118);
+                    shops_ids = new List<long>();
+                    shops_ids.Add(118);
                     Log.print("ingrediant with name " + name + " has null shops_ids list, it was reset to be ShopB");
+                    reset_num_days_is_good = true;
                 }
-                if (num_days_is_good < 0) {
+                if (num_days_is_good < 0 || reset_num_days_is_good) {
                     is_legal = false;
                     num_days_is_good = 7;
                     Log.print("ingrediant with name " + name + " has negative num_days_is_good, it was reset to be 7");
                 }
             } else {
+                bool reset_num_days_is_good = false;
                 if (shops_ids == null) {
                     is_legal = false;
                     shops_ids = new List<long>();
                     Log.print("ingrediant with name " + name + " has null shops_ids list, it was reset to be empty");
+                    reset_num_days_is_good = true;
                 }
-                if (num_days_is_good < 0) {
+                if (num_days_is_good < 0 || reset_num_days_is_good) {
                     is_legal = false;
                     num_days_is_good = 0;
                     Log.print("ingrediant with name " + name + " has negative num_days_is_good, it was reset to be 0");
