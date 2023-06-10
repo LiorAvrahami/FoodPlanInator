@@ -18,7 +18,7 @@ namespace FoodPlanInator {
             init_GridView();
         }
 
-        // Ingrediants Logic
+        // ------------------------------ Ingrediants Logic
 
         float calculate_ingrediant_match_score(string ingrediant_name) {
             // low score means good match
@@ -112,7 +112,35 @@ namespace FoodPlanInator {
             return new IngrediantAmmount(get_selected_ingrediant_id(), ammount);
         }
 
-        // Recipe Creator Logic
+        private void mIngrediantListBox_KeyDown(object sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.Delete) {
+                if (get_selected_ingrediant_id() != 0) {
+                    Ingrediant ingred = RecipiesArchiveIntf.get_Ingrediant(get_selected_ingrediant_id());
+                    DialogResult dialogResult = MessageBox.Show("You are about to delete ingrediant: \"" + ingred.name + "\" are you sure?",
+                        "Delete Ingrediant", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes) {
+                        bool success = false;
+                        success = RecipiesArchiveIntf.delete_Ingrediant(ingred.id, false);
+                        // force delete, it is commentted out because it is too destructive.
+                        /*
+                        if (!success) {
+                            dialogResult = MessageBox.Show("do you want to FORCE DELETE the ingrediant: \"" + ingred.name + "\"? THIS IS NOT ADVISED!",
+                                "Delete Ingrediant", MessageBoxButtons.YesNo);
+                            if (dialogResult == DialogResult.Yes) {
+                                success = RecipiesArchiveIntf.delete_Ingrediant(ingred.id, true);
+                                if (!success) {
+                                    throw new Exception("UNEXPECTTED ERROR: couldn't delete");
+                                }
+                            }
+                        }
+                        */
+                    }
+                }
+            }
+            reload_ingrediants_list();
+        }
+
+        // ------------------------------ Recipe Creator Logic
         DataTable SelecttedIngrediants_View;
 
         void init_GridView() {
@@ -253,8 +281,16 @@ namespace FoodPlanInator {
             reload_all_recipes_list();
         }
 
+        private void mGridView_SelecttedIngrediants_KeyDown(object sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.Delete) {
+                if (recipe_creator_get_selected_index() != -1) {
+                    mGridView_SelecttedIngrediants.Rows.RemoveAt(recipe_creator_get_selected_index());
+                }
+            }
+        }
 
-        // Recipe List Logic
+
+        // ------------------------------ Recipe List Logic
 
         float calculate_recipe_match_score(string recipe_name) {
             // low score means good match
@@ -334,5 +370,20 @@ namespace FoodPlanInator {
         private void mListBx_Recipes_DrawItem(object sender, DrawItemEventArgs e) {
             ListBoxUtil.DrawListBoxItem(realSelecttedRecipeIndex, sender, e);
         }
+
+        private void mListBx_Recipes_KeyDown(object sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.Delete) {
+                if (get_selected_recipe_id() != 0) {
+                    Recipe recipe = RecipiesArchiveIntf.get_recipe(get_selected_recipe_id());
+                    DialogResult dialogResult = MessageBox.Show("You are about to delete recipe: \"" + recipe.name + "\" are you sure?",
+                        "Delete Recipe", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes) {
+                        RecipiesArchiveIntf.delete_recipe(recipe.id);
+                    }
+                }
+            }
+            reload_all_recipes_list();
+        }
+
     }
 }

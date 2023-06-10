@@ -82,6 +82,7 @@
             mIngrediantListBox.DrawItem += mIngrediantListBox_DrawItem;
             mIngrediantListBox.SelectedIndexChanged += mIngrediantListBox_SelectedIndexChanged;
             mIngrediantListBox.DoubleClick += mIngrediantListBox_DoubleClick;
+            mIngrediantListBox.KeyDown += mIngrediantListBox_KeyDown;
             // 
             // groupBox1
             // 
@@ -234,7 +235,7 @@
             mGridView_SelecttedIngrediants.Size = new Size(315, 440);
             mGridView_SelecttedIngrediants.TabIndex = 11;
             mGridView_SelecttedIngrediants.SelectionChanged += mGridView_SelecttedIngrediants_SelectionChanged;
-            mGridView_SelecttedIngrediants.KeyDown += AddRecipe_KeyDown;
+            mGridView_SelecttedIngrediants.KeyDown += mGridView_SelecttedIngrediants_KeyDown;
             mGridView_SelecttedIngrediants.MouseClick += mRecipe_ListBox_MouseClick;
             // 
             // groupBox3
@@ -290,6 +291,7 @@
             mListBx_Recipes.TabIndex = 0;
             mListBx_Recipes.DrawItem += mListBx_Recipes_DrawItem;
             mListBx_Recipes.SelectedIndexChanged += mListBx_Recipes_SelectedIndexChanged;
+            mListBx_Recipes.KeyDown += mListBx_Recipes_KeyDown;
             mListBx_Recipes.MouseDoubleClick += mListBx_Recipes_MouseDoubleClick;
             // 
             // AddRecipe

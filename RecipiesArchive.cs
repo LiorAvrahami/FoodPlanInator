@@ -101,9 +101,9 @@ namespace FoodPlanInator {
 
         public static void delete_recipe(long Id) { RecipiesArchivePriv.global_instance.delete_recipe(Id); }
 
-        public static void delete_Ingrediant(long Id, bool isFourceDelete) {
+        public static bool delete_Ingrediant(long Id, bool isFourceDelete) {
             // make sure ingrediant isn't in use in any recipe, unless isFourceDelete is true, in which case no check is preformed.
-            RecipiesArchivePriv.global_instance.delete_Ingrediant(Id, isFourceDelete);
+            return RecipiesArchivePriv.global_instance.delete_Ingrediant(Id, isFourceDelete);
         }
 
         // internal workings for recipe and ingrediant archive
@@ -213,15 +213,16 @@ namespace FoodPlanInator {
                 if (recipe != null) {
                     recipes_list.Remove(recipe);
                 }
+                this.save();
             }
 
-            public void delete_Ingrediant(long Id, bool isFourceDelete) {
+            public bool delete_Ingrediant(long Id, bool isFourceDelete) {
                 // make sure ingrediant isn't in use in any recipe, unless isFourceDelete is true, in which case no check is preformed.
                 foreach (var recipe in recipes_list) {
                     foreach (var ingr in recipe.ingrediants) {
                         if (ingr.ingrediant_id == Id && !isFourceDelete) {
                             MessageBox.Show("can't delete because ingrediant exists in recipe: " + recipe.name);
-                            return;
+                            return false;
                         }
                     }
                 }
@@ -232,6 +233,7 @@ namespace FoodPlanInator {
                 }
 
                 save();
+                return true;
             }
 
             public bool ingrediant_exists(long Id) {
