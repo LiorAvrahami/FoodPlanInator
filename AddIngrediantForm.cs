@@ -115,9 +115,13 @@ namespace FoodPlanInator {
                 return;
             }
             try {
-                this.num_days_is_good = int.Parse(mTxtNumDays.Text);
+                int temp = int.Parse(mTxtNumDays.Text);
+                if (temp <= 0) {
+                    throw new Exception();
+                }
+                this.num_days_is_good = temp;
             } catch (Exception ex) {
-                MessageBox.Show("Price must be number");
+                MessageBox.Show("num days is good must be a positive number");
                 return;
             }
 
